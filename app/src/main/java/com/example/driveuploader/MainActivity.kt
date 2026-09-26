@@ -1,44 +1,22 @@
 package com.example.driveuploader
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
+import android.provider.DocumentsContract
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
-import com.google.api.services.drive.DriveScopes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var googleSignInClient: GoogleSignInClient
-    private var currentAccount: GoogleSignInAccount? = null
-
     private lateinit var statusText: TextView
-    private lateinit var signInButton: Button
     private lateinit var pickButton: Button
+    private lateinit var sendButton: Button
+    private lateinit var deleteButton: Button
 
-    private val signInLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            currentAccount = task.getResult(ApiException::class.java)
-            appendStatus("وارد شدی به عنوان: ${currentAccount?.email}")
-        } catch (e: ApiException) {
-            appendStatus("ورود ناموفق (کد ${e.statusCode}): ${e.message}")
-        }
-    }
+    private var selectedUris: List<Uri> = emptyList()
 
     private val filePickerLauncher = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -47,12 +25,10 @@ class MainActivity : AppCompatActivity() {
             appendStatus("هیچ فایلی انتخاب نشد.")
             return@registerForActivityResult
         }
-        val account = currentAccount
-        if (account == null) {
-            appendStatus("اول باید با حساب گوگل وارد بشی.")
-            return@registerForActivityResult
-        }
-        uploadFiles(uris, account)
+        selectedUris = uris
+        sendButton.isEnabled = true
+        deleteButton.isEnabled = false
+        appendStatus("${uris.size} فایل انتخاب شد. حالا دکمه «ارسال به Drive» را بزن.")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,60 +36,64 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         statusText = findViewById(R.id.statusText)
-        signInButton = findViewById(R.id.signInButton)
         pickButton = findViewById(R.id.pickButton)
+        sendButton = findViewById(R.id.sendButton)
+        deleteButton = findViewById(R.id.deleteButton)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        currentAccount = GoogleSignIn.getLastSignedInAccount(this)
-        currentAccount?.let {
-            appendStatus("قبلاً وارد شدی: ${it.email}")
-        }
-
-        signInButton.setOnClickListener {
-            signInLauncher.launch(googleSignInClient.signInIntent)
-        }
+        sendButton.isEnabled = false
+        deleteButton.isEnabled = false
 
         pickButton.setOnClickListener {
             filePickerLauncher.launch(arrayOf("image/*", "video/*"))
         }
-    }
 
-    private fun uploadFiles(uris: List<Uri>, account: GoogleSignInAccount) {
-        val helper = DriveServiceHelper(this, account)
+        sendButton.setOnClickListener {
+            sendToDrive()
+        }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            for (uri in uris) {
-                val name = getFileName(uri)
-                val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
-                appendStatus("در حال آپلود: $name ...")
-
-                try {
-                    val fileId = withContext(Dispatchers.IO) {
-                        helper.uploadFile(this@MainActivity, uri, name, mimeType)
-                    }
-                    appendStatus("✅ آپلود موفق: $name  (Drive ID: $fileId)")
-                } catch (e: Exception) {
-                    appendStatus("❌ آپلود ناموفق: $name  —  ${e.message}")
-                }
-            }
-            appendStatus("پایان عملیات. فایل اصلی روی گوشی دست‌نخورده باقی مانده.")
+        deleteButton.setOnClickListener {
+            deleteSelectedFiles()
         }
     }
 
-    private fun getFileName(uri: Uri): String {
-        var name = "unknown_file"
-        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (cursor.moveToFirst() && nameIndex >= 0) {
-                name = cursor.getString(nameIndex)
+    private fun sendToDrive() {
+        if (selectedUris.isEmpty()) return
+
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = "*/*"
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(selectedUris))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "بارگذاری با..."))
+        appendStatus("پنجره انتخاب باز شد. Drive رو انتخاب کن، پوشه و حساب رو خودت مشخص کن و بارگذاری کن.")
+
+        deleteButton.isEnabled = true
+    }
+
+    private fun deleteSelectedFiles() {
+        if (selectedUris.isEmpty()) return
+
+        var successCount = 0
+        var failCount = 0
+
+        for (uri in selectedUris) {
+            try {
+                val deleted = DocumentsContract.deleteDocument(contentResolver, uri)
+                if (deleted) successCount++ else failCount++
+            } catch (e: Exception) {
+                failCount++
             }
         }
-        return name
+
+        appendStatus("پاک شد: $successCount فایل موفق، $failCount فایل ناموفق.")
+        if (failCount > 0) {
+            appendStatus("برای فایل‌های ناموفق، خودت از اپ گالری حذفشون کن.")
+        }
+
+        selectedUris = emptyList()
+        sendButton.isEnabled = false
+        deleteButton.isEnabled = false
     }
 
     private fun appendStatus(message: String) {
