@@ -156,7 +156,7 @@ jobs:
           cat > app/src/main/java/com/smartphone/mediadrive/MainActivity.java <<'EOF'
           package com.smartphone.mediadrive;
 
-          import android.app.Activity;
+          import android.app.PendingIntent;
           import android.content.ContentResolver;
           import android.content.Intent;
           import android.database.Cursor;
@@ -193,7 +193,6 @@ jobs:
           import java.net.URLEncoder;
           import java.nio.charset.StandardCharsets;
           import java.util.ArrayList;
-          import java.util.List;
           import java.util.concurrent.ExecutorService;
           import java.util.concurrent.Executors;
 
@@ -214,8 +213,10 @@ jobs:
                       "https://www.googleapis.com/auth/drive.file";
 
               private final ArrayList<Uri> selectedFiles = new ArrayList<>();
-              private final ExecutorService executor = Executors.newSingleThreadExecutor();
-              private final OkHttpClient http = new OkHttpClient();
+              private final ExecutorService executor =
+                      Executors.newSingleThreadExecutor();
+              private final OkHttpClient http =
+                      new OkHttpClient();
 
               private GoogleSignInAccount account;
 
@@ -233,72 +234,164 @@ jobs:
 
                   buildUi();
 
-                  account = GoogleSignIn.getLastSignedInAccount(this);
+                  account =
+                          GoogleSignIn.getLastSignedInAccount(this);
 
                   if (account != null) {
-                      setStatus("Google متصل است: " + account.getEmail());
+                      setStatus(
+                              "Google متصل است: " +
+                                      account.getEmail()
+                      );
                   } else {
-                      setStatus("ابتدا به Google متصل شوید.");
+                      setStatus(
+                              "ابتدا به Google متصل شوید."
+                      );
                   }
               }
 
               private void buildUi() {
-                  LinearLayout root = new LinearLayout(this);
-                  root.setOrientation(LinearLayout.VERTICAL);
-                  root.setPadding(40, 40, 40, 40);
+                  LinearLayout root =
+                          new LinearLayout(this);
 
-                  TextView title = new TextView(this);
-                  title.setText("SmartPhone Media Drive");
+                  root.setOrientation(
+                          LinearLayout.VERTICAL
+                  );
+
+                  root.setPadding(
+                          40,
+                          40,
+                          40,
+                          40
+                  );
+
+                  TextView title =
+                          new TextView(this);
+
+                  title.setText(
+                          "SmartPhone Media Drive"
+                  );
+
                   title.setTextSize(26);
                   title.setGravity(Gravity.CENTER);
+
                   root.addView(title);
 
-                  TextView info = new TextView(this);
+                  TextView info =
+                          new TextView(this);
+
                   info.setText(
                           "عکس و فیلم را انتخاب کنید.\n" +
                           "فایل اصلی بدون تبدیل به Google Drive فرستاده می‌شود.\n" +
                           "بعد از بررسی شما، حذف فایل از گوشی انجام می‌شود."
                   );
+
                   info.setTextSize(16);
-                  info.setPadding(0, 30, 0, 30);
+
+                  info.setPadding(
+                          0,
+                          30,
+                          0,
+                          30
+                  );
+
                   root.addView(info);
 
-                  connectButton = new Button(this);
-                  connectButton.setText("اتصال به Google Drive");
-                  connectButton.setOnClickListener(v -> signIn());
+                  connectButton =
+                          new Button(this);
+
+                  connectButton.setText(
+                          "اتصال به Google Drive"
+                  );
+
+                  connectButton.setOnClickListener(
+                          v -> signIn()
+                  );
+
                   root.addView(connectButton);
 
-                  pickButton = new Button(this);
-                  pickButton.setText("انتخاب عکس و فیلم");
-                  pickButton.setOnClickListener(v -> pickMedia());
+                  pickButton =
+                          new Button(this);
+
+                  pickButton.setText(
+                          "انتخاب عکس و فیلم"
+                  );
+
+                  pickButton.setOnClickListener(
+                          v -> pickMedia()
+                  );
+
                   root.addView(pickButton);
 
-                  selectedText = new TextView(this);
-                  selectedText.setText("هنوز فایلی انتخاب نشده است.");
+                  selectedText =
+                          new TextView(this);
+
+                  selectedText.setText(
+                          "هنوز فایلی انتخاب نشده است."
+                  );
+
                   selectedText.setTextSize(15);
-                  selectedText.setPadding(0, 20, 0, 20);
+
+                  selectedText.setPadding(
+                          0,
+                          20,
+                          0,
+                          20
+                  );
+
                   root.addView(selectedText);
 
-                  uploadButton = new Button(this);
-                  uploadButton.setText("آپلود به Google Drive");
-                  uploadButton.setOnClickListener(v -> uploadFiles());
+                  uploadButton =
+                          new Button(this);
+
+                  uploadButton.setText(
+                          "آپلود به Google Drive"
+                  );
+
+                  uploadButton.setOnClickListener(
+                          v -> uploadFiles()
+                  );
+
                   root.addView(uploadButton);
 
-                  deleteButton = new Button(this);
-                  deleteButton.setText("حذف فایل‌های انتخاب‌شده از گوشی");
-                  deleteButton.setOnClickListener(v -> deleteFiles());
+                  deleteButton =
+                          new Button(this);
+
+                  deleteButton.setText(
+                          "حذف فایل‌های انتخاب‌شده از گوشی"
+                  );
+
+                  deleteButton.setOnClickListener(
+                          v -> deleteFiles()
+                  );
+
                   root.addView(deleteButton);
 
-                  progress = new ProgressBar(this);
-                  progress.setVisibility(View.GONE);
+                  progress =
+                          new ProgressBar(this);
+
+                  progress.setVisibility(
+                          View.GONE
+                  );
+
                   root.addView(progress);
 
-                  status = new TextView(this);
+                  status =
+                          new TextView(this);
+
                   status.setTextSize(15);
-                  status.setPadding(0, 25, 0, 0);
+
+                  status.setPadding(
+                          0,
+                          25,
+                          0,
+                          0
+                  );
+
                   root.addView(status);
 
-                  ScrollView scroll = new ScrollView(this);
+                  ScrollView scroll =
+                          new ScrollView(this);
+
                   scroll.addView(root);
 
                   setContentView(scroll);
@@ -307,28 +400,55 @@ jobs:
               private void signIn() {
                   GoogleSignInOptions options =
                           new GoogleSignInOptions.Builder(
-                                  GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                  GoogleSignInOptions.DEFAULT_SIGN_IN
+                          )
                                   .requestEmail()
-                                  .requestScopes(new Scope(DRIVE_SCOPE))
+                                  .requestScopes(
+                                          new Scope(DRIVE_SCOPE)
+                                  )
                                   .build();
 
                   Intent intent =
-                          GoogleSignIn.getClient(this, options).getSignInIntent();
+                          GoogleSignIn.getClient(
+                                  this,
+                                  options
+                          ).getSignInIntent();
 
-                  startActivityForResult(intent, SIGN_IN);
+                  startActivityForResult(
+                          intent,
+                          SIGN_IN
+                  );
               }
 
               private void pickMedia() {
-                  Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                  Intent intent =
+                          new Intent(
+                                  Intent.ACTION_OPEN_DOCUMENT
+                          );
+
                   intent.setType("*/*");
+
                   intent.putExtra(
                           Intent.EXTRA_MIME_TYPES,
-                          new String[]{"image/*", "video/*"}
+                          new String[]{
+                                  "image/*",
+                                  "video/*"
+                          }
                   );
-                  intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                  intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-                  startActivityForResult(intent, PICK_MEDIA);
+                  intent.putExtra(
+                          Intent.EXTRA_ALLOW_MULTIPLE,
+                          true
+                  );
+
+                  intent.addCategory(
+                          Intent.CATEGORY_OPENABLE
+                  );
+
+                  startActivityForResult(
+                          intent,
+                          PICK_MEDIA
+                  );
               }
 
               @Override
@@ -337,21 +457,37 @@ jobs:
                       int resultCode,
                       @Nullable Intent data) {
 
-                  super.onActivityResult(requestCode, resultCode, data);
+                  super.onActivityResult(
+                          requestCode,
+                          resultCode,
+                          data
+                  );
 
                   if (requestCode == SIGN_IN) {
-                      if (resultCode != RESULT_OK || data == null) {
-                          setStatus("اتصال به Google لغو شد.");
+
+                      if (resultCode != RESULT_OK ||
+                              data == null) {
+
+                          setStatus(
+                                  "اتصال به Google لغو شد."
+                          );
+
                           return;
                       }
 
                       try {
+
                           account =
                                   GoogleSignIn
-                                          .getSignedInAccountFromIntent(data)
-                                          .getResult(ApiException.class);
+                                          .getSignedInAccountFromIntent(
+                                                  data
+                                          )
+                                          .getResult(
+                                                  ApiException.class
+                                          );
 
                           if (account != null) {
+
                               setStatus(
                                       "Google متصل شد: " +
                                               account.getEmail()
@@ -359,6 +495,7 @@ jobs:
                           }
 
                       } catch (ApiException e) {
+
                           setStatus(
                                   "خطا در اتصال Google: " +
                                           e.getStatusCode()
@@ -369,28 +506,47 @@ jobs:
                   }
 
                   if (requestCode == PICK_MEDIA) {
-                      if (resultCode != RESULT_OK || data == null) {
+
+                      if (resultCode != RESULT_OK ||
+                              data == null) {
+
                           return;
                       }
 
                       selectedFiles.clear();
 
                       if (data.getClipData() != null) {
-                          int count = data.getClipData().getItemCount();
 
-                          for (int i = 0; i < count; i++) {
-                              Uri uri = data.getClipData().getItemAt(i).getUri();
+                          int count =
+                                  data.getClipData()
+                                          .getItemCount();
+
+                          for (int i = 0;
+                               i < count;
+                               i++) {
+
+                              Uri uri =
+                                      data.getClipData()
+                                              .getItemAt(i)
+                                              .getUri();
+
                               selectedFiles.add(uri);
+
                               takePermission(uri);
                           }
 
                       } else if (data.getData() != null) {
-                          Uri uri = data.getData();
+
+                          Uri uri =
+                                  data.getData();
+
                           selectedFiles.add(uri);
+
                           takePermission(uri);
                       }
 
                       updateSelectedText();
+
                       setStatus(
                               selectedFiles.size() +
                                       " فایل انتخاب شد."
@@ -400,6 +556,7 @@ jobs:
                   }
 
                   if (requestCode == DELETE_REQUEST) {
+
                       setStatus(
                               "درخواست حذف توسط سیستم Android پردازش شد."
                       );
@@ -407,71 +564,113 @@ jobs:
               }
 
               private void takePermission(Uri uri) {
+
                   try {
+
                       int flags =
                               Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                                      Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                              Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 
                       getContentResolver()
-                              .takePersistableUriPermission(uri, flags);
+                              .takePersistableUriPermission(
+                                      uri,
+                                      flags
+                              );
 
                   } catch (Exception ignored) {
                   }
               }
 
               private void updateSelectedText() {
+
                   if (selectedFiles.isEmpty()) {
+
                       selectedText.setText(
                               "هنوز فایلی انتخاب نشده است."
                       );
+
                       return;
                   }
 
-                  StringBuilder text = new StringBuilder();
-                  text.append("فایل‌های انتخاب‌شده:\n\n");
+                  StringBuilder text =
+                          new StringBuilder();
 
-                  for (int i = 0; i < selectedFiles.size(); i++) {
+                  text.append(
+                          "فایل‌های انتخاب‌شده:\n\n"
+                  );
+
+                  for (int i = 0;
+                       i < selectedFiles.size();
+                       i++) {
+
                       text.append(i + 1)
                               .append(". ")
-                              .append(getFileName(selectedFiles.get(i)))
+                              .append(
+                                      getFileName(
+                                              selectedFiles.get(i)
+                                      )
+                              )
                               .append("\n");
                   }
 
-                  selectedText.setText(text.toString());
+                  selectedText.setText(
+                          text.toString()
+                  );
               }
 
               private void uploadFiles() {
+
                   if (account == null) {
+
                       Toast.makeText(
                               this,
                               "ابتدا به Google متصل شوید.",
                               Toast.LENGTH_LONG
                       ).show();
+
                       return;
                   }
 
                   if (selectedFiles.isEmpty()) {
+
                       Toast.makeText(
                               this,
                               "ابتدا عکس یا فیلم انتخاب کنید.",
                               Toast.LENGTH_LONG
                       ).show();
+
                       return;
                   }
 
                   setBusy(true);
-                  setStatus("در حال آماده‌سازی Google Drive...");
+
+                  setStatus(
+                          "در حال آماده‌سازی Google Drive..."
+                  );
 
                   executor.execute(() -> {
-                      try {
-                          String token = getAccessToken();
-                          String folderId = findOrCreateFolder(token);
 
-                          int total = selectedFiles.size();
+                      try {
+
+                          String token =
+                                  getAccessToken();
+
+                          String folderId =
+                                  findOrCreateFolder(
+                                          token
+                                  );
+
+                          int total =
+                                  selectedFiles.size();
+
                           int done = 0;
 
-                          for (Uri uri : selectedFiles) {
-                              String name = getFileName(uri);
+                          for (Uri uri :
+                                  selectedFiles) {
+
+                              String name =
+                                      getFileName(uri);
+
                               setStatusOnUi(
                                       "در حال آپلود: " +
                                               name +
@@ -481,30 +680,45 @@ jobs:
                                               total
                               );
 
-                              uploadFile(token, folderId, uri);
+                              uploadFile(
+                                      token,
+                                      folderId,
+                                      uri
+                              );
+
                               done++;
                           }
 
                           setStatusOnUi(
                                   "آپلود همه فایل‌ها با موفقیت انجام شد.\n" +
-                                          "حالا Google Drive را بررسی کنید."
+                                  "حالا Google Drive را بررسی کنید."
                           );
 
                       } catch (Exception e) {
+
                           setStatusOnUi(
                                   "خطا در آپلود:\n" +
                                           e.getMessage()
                           );
 
                       } finally {
-                          runOnUiThread(() -> setBusy(false));
+
+                          runOnUiThread(
+                                  () -> setBusy(false)
+                          );
                       }
                   });
               }
 
-              private String getAccessToken() throws Exception {
-                  if (account == null || account.getAccount() == null) {
-                      throw new Exception("حساب Google پیدا نشد.");
+              private String getAccessToken()
+                      throws Exception {
+
+                  if (account == null ||
+                          account.getAccount() == null) {
+
+                      throw new Exception(
+                              "حساب Google پیدا نشد."
+                      );
                   }
 
                   return GoogleAuthUtil.getToken(
@@ -514,86 +728,122 @@ jobs:
                   );
               }
 
-              private String findOrCreateFolder(String token)
-                      throws Exception {
+              private String findOrCreateFolder(
+                      String token
+              ) throws Exception {
 
-                  String folderName = "SmartPhone Media Drive";
+                  String folderName =
+                          "SmartPhone Media Drive";
 
                   String query =
                           "name='" +
-                                  folderName.replace("'", "\\'") +
-                                  "' and " +
-                                  "mimeType='application/vnd.google-apps.folder' and " +
-                                  "trashed=false";
+                          folderName.replace(
+                                  "'",
+                                  "\\'"
+                          ) +
+                          "' and " +
+                          "mimeType='application/vnd.google-apps.folder' and " +
+                          "trashed=false";
 
                   String url =
                           "https://www.googleapis.com/drive/v3/files" +
-                                  "?q=" +
-                                  URLEncoder.encode(
-                                          query,
-                                          StandardCharsets.UTF_8.name()
-                                  ) +
-                                  "&fields=files(id,name)";
+                          "?q=" +
+                          URLEncoder.encode(
+                                  query,
+                                  StandardCharsets.UTF_8.name()
+                          ) +
+                          "&fields=files(id,name)";
 
-                  Request request = new Request.Builder()
-                          .url(url)
-                          .header(
-                                  "Authorization",
-                                  "Bearer " + token
-                          )
-                          .get()
-                          .build();
+                  Request request =
+                          new Request.Builder()
+                                  .url(url)
+                                  .header(
+                                          "Authorization",
+                                          "Bearer " + token
+                                  )
+                                  .get()
+                                  .build();
 
-                  try (Response response = http.newCall(request).execute()) {
+                  try (
+                          Response response =
+                                  http.newCall(
+                                          request
+                                  ).execute()
+                  ) {
 
                       if (!response.isSuccessful()) {
+
                           throw new Exception(
                                   "خطا در پیدا کردن پوشه: HTTP " +
                                           response.code()
                           );
                       }
 
-                      String body = response.body() == null
-                              ? ""
-                              : response.body().string();
+                      String body =
+                              response.body() == null
+                                      ? ""
+                                      : response.body()
+                                              .string();
 
-                      JSONObject json = new JSONObject(body);
-                      JSONArray files = json.optJSONArray("files");
+                      JSONObject json =
+                              new JSONObject(body);
 
-                      if (files != null && files.length() > 0) {
+                      JSONArray files =
+                              json.optJSONArray(
+                                      "files"
+                              );
+
+                      if (files != null &&
+                              files.length() > 0) {
+
                           return files
                                   .getJSONObject(0)
                                   .getString("id");
                       }
                   }
 
-                  JSONObject metadata = new JSONObject();
-                  metadata.put("name", folderName);
+                  JSONObject metadata =
+                          new JSONObject();
+
+                  metadata.put(
+                          "name",
+                          folderName
+                  );
+
                   metadata.put(
                           "mimeType",
                           "application/vnd.google-apps.folder"
                   );
 
-                  RequestBody body = RequestBody.create(
-                          metadata.toString(),
-                          MediaType.parse("application/json")
-                  );
+                  RequestBody body =
+                          RequestBody.create(
+                                  metadata.toString(),
+                                  MediaType.parse(
+                                          "application/json"
+                                  )
+                          );
 
-                  Request create = new Request.Builder()
-                          .url(
-                                  "https://www.googleapis.com/drive/v3/files"
-                          )
-                          .header(
-                                  "Authorization",
-                                  "Bearer " + token
-                          )
-                          .post(body)
-                          .build();
+                  Request create =
+                          new Request.Builder()
+                                  .url(
+                                          "https://www.googleapis.com/drive/v3/files"
+                                  )
+                                  .header(
+                                          "Authorization",
+                                          "Bearer " + token
+                                  )
+                                  .post(body)
+                                  .build();
 
-                  try (Response response =
-                               http.newCall(create).execute()) {
+                  try (
+                          Response response =
+                                  http.newCall(
+                                          create
+                                  ).execute()
+                  ) {
 
                       if (!response.isSuccessful()) {
+
                           throw new Exception(
                                   "خطا در ساخت پوشه: HTTP " +
                                           response.code()
@@ -603,34 +853,56 @@ jobs:
                       String result =
                               response.body() == null
                                       ? ""
-                                      : response.body().string();
+                                      : response.body()
+                                              .string();
 
-                      return new JSONObject(result).getString("id");
+                      return new JSONObject(
+                              result
+                      ).getString("id");
                   }
               }
 
               private void uploadFile(
                       String token,
                       String folderId,
-                      Uri uri) throws Exception {
+                      Uri uri
+              ) throws Exception {
 
-                  ContentResolver resolver = getContentResolver();
+                  ContentResolver resolver =
+                          getContentResolver();
 
-                  String name = getFileName(uri);
-                  String mime = resolver.getType(uri);
+                  String name =
+                          getFileName(uri);
+
+                  String mime =
+                          resolver.getType(uri);
 
                   if (TextUtils.isEmpty(mime)) {
-                      mime = "application/octet-stream";
+
+                      mime =
+                              "application/octet-stream";
                   }
 
-                  long length = getFileLength(uri);
+                  long length =
+                          getFileLength(uri);
 
-                  JSONObject metadata = new JSONObject();
-                  metadata.put("name", name);
+                  JSONObject metadata =
+                          new JSONObject();
 
-                  JSONArray parents = new JSONArray();
+                  metadata.put(
+                          "name",
+                          name
+                  );
+
+                  JSONArray parents =
+                          new JSONArray();
+
                   parents.put(folderId);
-                  metadata.put("parents", parents);
+
+                  metadata.put(
+                          "parents",
+                          parents
+                  );
 
                   RequestBody metadataBody =
                           RequestBody.create(
@@ -640,41 +912,57 @@ jobs:
                                   )
                           );
 
-                  Request init = new Request.Builder()
-                          .url(
-                                  "https://www.googleapis.com/upload/drive/v3/files" +
+                  Request init =
+                          new Request.Builder()
+                                  .url(
+                                          "https://www.googleapis.com/upload/drive/v3/files" +
                                           "?uploadType=resumable"
-                          )
-                          .header(
-                                  "Authorization",
-                                  "Bearer " + token
-                          )
-                          .header(
-                                  "X-Upload-Content-Type",
-                                  mime
-                          )
-                          .header(
-                                  "X-Upload-Content-Length",
-                                  String.valueOf(length)
-                          )
-                          .post(metadataBody)
-                          .build();
+                                  )
+                                  .header(
+                                          "Authorization",
+                                          "Bearer " + token
+                                  )
+                                  .header(
+                                          "X-Upload-Content-Type",
+                                          mime
+                                  )
+                                  .header(
+                                          "X-Upload-Content-Length",
+                                          String.valueOf(
+                                                  length
+                                          )
+                                  )
+                                  .post(
+                                          metadataBody
+                                  )
+                                  .build();
 
                   String uploadUrl;
 
-                  try (Response response =
-                               http.newCall(init).execute()) {
+                  try (
+                          Response response =
+                                  http.newCall(
+                                          init
+                                  ).execute()
+                  ) {
 
                       if (!response.isSuccessful()) {
+
                           throw new Exception(
                                   "شروع آپلود ناموفق بود: HTTP " +
                                           response.code()
                           );
                       }
 
-                      uploadUrl = response.header("Location");
+                      uploadUrl =
+                              response.header(
+                                      "Location"
+                              );
 
-                      if (TextUtils.isEmpty(uploadUrl)) {
+                      if (TextUtils.isEmpty(
+                              uploadUrl
+                      )) {
+
                           throw new Exception(
                                   "Google Drive آدرس آپلود را برنگرداند."
                           );
@@ -689,23 +977,30 @@ jobs:
                                   length
                           );
 
-                  Request upload = new Request.Builder()
-                          .url(uploadUrl)
-                          .header(
-                                  "Authorization",
-                                  "Bearer " + token
-                          )
-                          .put(fileBody)
-                          .build();
+                  Request upload =
+                          new Request.Builder()
+                                  .url(uploadUrl)
+                                  .header(
+                                          "Authorization",
+                                          "Bearer " + token
+                                  )
+                                  .put(fileBody)
+                                  .build();
 
-                  try (Response response =
-                               http.newCall(upload).execute()) {
+                  try (
+                          Response response =
+                                  http.newCall(
+                                          upload
+                                  ).execute()
+                  ) {
 
                       if (!response.isSuccessful()) {
+
                           String error =
                                   response.body() == null
                                           ? ""
-                                          : response.body().string();
+                                          : response.body()
+                                                  .string();
 
                           throw new Exception(
                                   "آپلود فایل ناموفق بود: HTTP " +
@@ -717,31 +1012,45 @@ jobs:
                   }
               }
 
-              private long getFileLength(Uri uri) {
-                  Cursor cursor = getContentResolver().query(
-                          uri,
-                          new String[]{
-                                  OpenableColumns.SIZE
-                          },
-                          null,
-                          null,
-                          null
-                  );
+              private long getFileLength(
+                      Uri uri
+              ) {
+
+                  Cursor cursor =
+                          getContentResolver().query(
+                                  uri,
+                                  new String[]{
+                                          OpenableColumns.SIZE
+                                  },
+                                  null,
+                                  null,
+                                  null
+                          );
 
                   if (cursor != null) {
+
                       try {
+
                           if (cursor.moveToFirst()) {
+
                               int index =
                                       cursor.getColumnIndex(
                                               OpenableColumns.SIZE
                                       );
 
                               if (index >= 0 &&
-                                      !cursor.isNull(index)) {
-                                  return cursor.getLong(index);
+                                      !cursor.isNull(
+                                              index
+                                      )) {
+
+                                  return cursor.getLong(
+                                          index
+                                  );
                               }
                           }
+
                       } finally {
+
                           cursor.close();
                       }
                   }
@@ -749,39 +1058,56 @@ jobs:
                   return -1;
               }
 
-              private String getFileName(Uri uri) {
-                  Cursor cursor = getContentResolver().query(
-                          uri,
-                          new String[]{
-                                  OpenableColumns.DISPLAY_NAME
-                          },
-                          null,
-                          null,
-                          null
-                  );
+              private String getFileName(
+                      Uri uri
+              ) {
+
+                  Cursor cursor =
+                          getContentResolver().query(
+                                  uri,
+                                  new String[]{
+                                          OpenableColumns.DISPLAY_NAME
+                                  },
+                                  null,
+                                  null,
+                                  null
+                          );
 
                   if (cursor != null) {
+
                       try {
+
                           if (cursor.moveToFirst()) {
+
                               int index =
                                       cursor.getColumnIndex(
                                               OpenableColumns.DISPLAY_NAME
                                       );
 
                               if (index >= 0) {
-                                  String name = cursor.getString(index);
 
-                                  if (!TextUtils.isEmpty(name)) {
+                                  String name =
+                                          cursor.getString(
+                                                  index
+                                          );
+
+                                  if (!TextUtils.isEmpty(
+                                          name
+                                  )) {
+
                                       return name;
                                   }
                               }
                           }
+
                       } finally {
+
                           cursor.close();
                       }
                   }
 
-                  String last = uri.getLastPathSegment();
+                  String last =
+                          uri.getLastPathSegment();
 
                   return TextUtils.isEmpty(last)
                           ? "media_file"
@@ -789,21 +1115,28 @@ jobs:
               }
 
               private void deleteFiles() {
+
                   if (selectedFiles.isEmpty()) {
+
                       Toast.makeText(
                               this,
                               "فایلی برای حذف انتخاب نشده است.",
                               Toast.LENGTH_LONG
                       ).show();
+
                       return;
                   }
 
-                  new androidx.appcompat.app.AlertDialog.Builder(this)
-                          .setTitle("تأیید حذف")
+                  new androidx.appcompat.app.AlertDialog.Builder(
+                          this
+                  )
+                          .setTitle(
+                                  "تأیید حذف"
+                          )
                           .setMessage(
                                   "آیا مطمئن هستید که فایل‌های انتخاب‌شده " +
-                                          "از گوشی حذف شوند؟\n\n" +
-                                          "فقط بعد از تأیید شما حذف انجام می‌شود."
+                                  "از گوشی حذف شوند؟\n\n" +
+                                  "فقط بعد از تأیید شما حذف انجام می‌شود."
                           )
                           .setNegativeButton(
                                   "لغو",
@@ -811,26 +1144,32 @@ jobs:
                           )
                           .setPositiveButton(
                                   "حذف",
-                                  (dialog, which) -> performDelete()
+                                  (dialog, which) ->
+                                          performDelete()
                           )
                           .show();
               }
 
               private void performDelete() {
-                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+                  if (Build.VERSION.SDK_INT >=
+                          Build.VERSION_CODES.R) {
 
                       try {
-                          ArrayList<Uri> list =
-                                  new ArrayList<>(selectedFiles);
 
-                          Intent intent =
+                          ArrayList<Uri> list =
+                                  new ArrayList<>(
+                                          selectedFiles
+                                  );
+
+                          PendingIntent pendingIntent =
                                   MediaStore.createDeleteRequest(
                                           getContentResolver(),
                                           list
                                   );
 
                           startIntentSenderForResult(
-                                  intent.getIntentSender(),
+                                  pendingIntent.getIntentSender(),
                                   DELETE_REQUEST,
                                   null,
                                   0,
@@ -839,6 +1178,7 @@ jobs:
                           );
 
                       } catch (Exception e) {
+
                           setStatus(
                                   "خطا در درخواست حذف:\n" +
                                           e.getMessage()
@@ -849,10 +1189,19 @@ jobs:
 
                       int deleted = 0;
 
-                      for (Uri uri : selectedFiles) {
+                      for (Uri uri :
+                              selectedFiles) {
+
                           try {
-                              deleted += getContentResolver()
-                                      .delete(uri, null, null);
+
+                              deleted +=
+                                      getContentResolver()
+                                              .delete(
+                                                      uri,
+                                                      null,
+                                                      null
+                                              );
+
                           } catch (Exception ignored) {
                           }
                       }
@@ -864,32 +1213,57 @@ jobs:
                   }
               }
 
-              private void setBusy(boolean busy) {
+              private void setBusy(
+                      boolean busy
+              ) {
+
                   runOnUiThread(() -> {
+
                       progress.setVisibility(
                               busy
                                       ? View.VISIBLE
                                       : View.GONE
                       );
 
-                      connectButton.setEnabled(!busy);
-                      pickButton.setEnabled(!busy);
-                      uploadButton.setEnabled(!busy);
-                      deleteButton.setEnabled(!busy);
+                      connectButton.setEnabled(
+                              !busy
+                      );
+
+                      pickButton.setEnabled(
+                              !busy
+                      );
+
+                      uploadButton.setEnabled(
+                              !busy
+                      );
+
+                      deleteButton.setEnabled(
+                              !busy
+                      );
                   });
               }
 
-              private void setStatus(String text) {
+              private void setStatus(
+                      String text
+              ) {
+
                   status.setText(text);
               }
 
-              private void setStatusOnUi(String text) {
-                  runOnUiThread(() -> status.setText(text));
+              private void setStatusOnUi(
+                      String text
+              ) {
+
+                  runOnUiThread(
+                          () -> status.setText(text)
+                  );
               }
 
               @Override
               protected void onDestroy() {
+
                   executor.shutdownNow();
+
                   super.onDestroy();
               }
 
@@ -905,7 +1279,9 @@ jobs:
                           ContentResolver resolver,
                           Uri uri,
                           String mime,
-                          long length) {
+                          long length
+                  ) {
+
                       this.resolver = resolver;
                       this.uri = uri;
                       this.mime = mime;
@@ -914,22 +1290,30 @@ jobs:
 
                   @Override
                   public MediaType contentType() {
+
                       return MediaType.parse(mime);
                   }
 
                   @Override
                   public long contentLength() {
+
                       return length;
                   }
 
                   @Override
                   public void writeTo(
-                          BufferedSink sink) throws IOException {
+                          BufferedSink sink
+                  ) throws IOException {
 
-                      try (InputStream input =
-                                   resolver.openInputStream(uri)) {
+                      try (
+                              InputStream input =
+                                      resolver.openInputStream(
+                                              uri
+                                      )
+                      ) {
 
                           if (input == null) {
+
                               throw new IOException(
                                       "فایل قابل خواندن نیست."
                               );
@@ -940,9 +1324,18 @@ jobs:
 
                           int read;
 
-                          while ((read =
-                                  input.read(buffer)) != -1) {
-                              sink.write(buffer, 0, read);
+                          while (
+                                  (read =
+                                          input.read(
+                                                  buffer
+                                          )) != -1
+                          ) {
+
+                              sink.write(
+                                      buffer,
+                                      0,
+                                      read
+                              );
                           }
                       }
                   }
