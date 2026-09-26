@@ -6,17 +6,24 @@
     android:padding="16dp">
 
     <Button
-        android:id="@+id/signInButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ورود با حساب گوگل" />
-
-    <Button
         android:id="@+id/pickButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="انتخاب عکس / فیلم" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="انتخاب عکس / فیلم برای آپلود" />
+        android:text="ارسال به Drive" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="پاک کردن از حافظه گوشی" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,7 +35,7 @@
             android:id="@+id/statusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="وضعیت آپلود اینجا نمایش داده می‌شود." />
+            android:text="وضعیت اینجا نمایش داده می‌شود." />
 
     </ScrollView>
 
